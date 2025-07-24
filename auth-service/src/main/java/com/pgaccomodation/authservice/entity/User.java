@@ -1,7 +1,19 @@
 package com.pgaccomodation.authservice.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import com.pgaccomodation.authservice.enums.UserType;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "users")
@@ -30,8 +42,9 @@ public class User {
 	@Column(nullable = false)
 	private String fullName;
 
+	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private String userType; // admin, owner, tenant
+	private UserType userType;
 
 	private String profilePic;
 

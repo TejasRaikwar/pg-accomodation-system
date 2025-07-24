@@ -18,27 +18,30 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final AuthenticationManager authenticationManager;
+	private final JwtUtil jwtUtil;
 
-    @Override
-    public void register(RegisterRequest request) {
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setUserType(request.getUserType());
-        userRepository.save(user);
-    }
+	@Override
+	public void register(RegisterRequest request) {
+		User user = new User();
+		user.setUsername(request.getUsername());
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
+		user.setEmail(request.getEmail());
+		user.setPhone(request.getPhone());
+		user.setFullName(request.getFullName());
+		user.setUserType(request.getUserType());
+		userRepository.save(user);
+	}
 
-    @Override
-    public AuthResponse login(AuthRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
+	@Override
+	public AuthResponse login(AuthRequest request) {
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
-        String token = jwtUtil.generateToken(user);
-        return new AuthResponse(token);
-    }
+		User user = userRepository.findByUsername(request.getUsername()).orElseThrow();
+		String token = jwtUtil.generateToken(user);
+		return new AuthResponse(token);
+	}
 }

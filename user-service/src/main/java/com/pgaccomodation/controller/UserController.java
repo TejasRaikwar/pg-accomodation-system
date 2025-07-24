@@ -11,14 +11,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.pgaccomodation.entity.User;
 import com.pgaccomodation.service.UserService;
+import com.pgaccomodation.util.JwtUtil;
 
+import jakarta.servlet.http.HttpServletRequest;
+
+@RestController
+@RequestMapping("/api/users")
 public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	private JwtUtil jwtUtil;
 
 	// Register new user
 	@PostMapping("/register")
@@ -64,4 +73,13 @@ public class UserController {
 		userService.deleteUser(id);
 		return ResponseEntity.noContent().build();
 	}
+
+	@GetMapping("/me")
+	public ResponseEntity<User> getCurrentUser(HttpServletRequest request) {
+		String token = request.getHeader("Authorization").replace("Bearer ", "");
+		String username = jwtUtil.extractUsername(token);
+		return userService.getUserByUsername(username).map(ResponseEntity::ok)
+				.orElse(ResponseEntity.notFound().build());
+	}
+
 }
