@@ -37,7 +37,7 @@ public class User {
 	private String phone;
 	
 	@Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 10)
+	@Column(name = "user_type")
 	private UserType userType;
 	
 	@Column(nullable = false, length = 100)

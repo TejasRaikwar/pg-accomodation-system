@@ -20,10 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
-        return new org.springframework.security.core.userdetails.User(
-                user.getUsername(),
-                user.getPassword(),
-                Collections.emptyList() // authorities/roles can be added here if needed
-        );
+        return org.springframework.security.core.userdetails.User
+                .withUsername(user.getUsername())
+                .password(user.getPassword())
+                .authorities(Collections.emptyList()) // you can add roles later
+                .accountLocked(false)
+                .accountExpired(false)
+                .credentialsExpired(false)
+                .disabled(false)
+                .build();
+
     }
 }

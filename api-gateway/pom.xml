@@ -35,7 +35,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-gateway-server-webmvc</artifactId>
+			<artifactId>spring-cloud-starter-gateway</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -47,6 +47,26 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		
+		<!-- JWT 0.11.5 -->
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-api</artifactId>
+    <version>0.11.5</version>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-impl</artifactId>
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+<dependency>
+    <groupId>io.jsonwebtoken</groupId>
+    <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson -->
+    <version>0.11.5</version>
+    <scope>runtime</scope>
+</dependency>
+
 	</dependencies>
 	<dependencyManagement>
 		<dependencies>

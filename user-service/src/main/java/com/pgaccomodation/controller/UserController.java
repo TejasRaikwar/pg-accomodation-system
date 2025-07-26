@@ -27,6 +27,7 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
 	private JwtUtil jwtUtil;
 
 	// Register new user

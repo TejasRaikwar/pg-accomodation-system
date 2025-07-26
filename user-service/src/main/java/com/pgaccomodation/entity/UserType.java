@@ -1,7 +1,7 @@
 package com.pgaccomodation.entity;
 
 public enum UserType {
-    admin,
-    owner,
-    tenant
+    ADMIN,
+    OWNER,
+    TENANT
 }
