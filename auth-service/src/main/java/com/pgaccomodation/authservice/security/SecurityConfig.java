@@ -1,5 +1,7 @@
 package com.pgaccomodation.authservice.security;
 
+import java.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 import com.pgaccomodation.authservice.service.CustomUserDetailsService;
 
@@ -29,12 +32,37 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final CustomUserDetailsService userDetailsService;
 
+//    @Bean
+//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+//        return http
+//                .csrf(csrf -> csrf.disable())
+//                .authorizeHttpRequests(auth -> auth
+//                        .requestMatchers("/api/auth/**").permitAll() // Allow public endpoints like login/register
+//                        .anyRequest().authenticated()
+//                )
+//                .exceptionHandling(ex -> ex
+//                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+//                )
+//                .sessionManagement(session -> session
+//                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+//                )
+//                .authenticationProvider(authenticationProvider())
+//                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+//                .build();
+//    }
+    
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .csrf(csrf -> csrf.disable())
+                .cors(cors -> cors.configurationSource(request -> {
+                    CorsConfiguration config = new CorsConfiguration();
+                    config.applyPermitDefaultValues(); // Apply default CORS settings
+                    config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+                    return config;
+                }))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // Allow public endpoints like login/register
+                        .requestMatchers("/api/auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -46,7 +74,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
+    }	
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

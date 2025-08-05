@@ -111,7 +111,6 @@ import com.pgaccomodation.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
-@CrossOrigin(origins = "*")
 @RequestMapping("/api/users")
 public class UserController {
 

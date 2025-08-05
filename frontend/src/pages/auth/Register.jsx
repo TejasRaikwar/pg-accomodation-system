@@ -11,7 +11,7 @@ const Register = () => {
     email: "",
     fullName: "",
     phone: "",
-    userType: "TENANT", // default is TENANT
+    userType: "TENANT", 
   });
 
   const [error, setError] = useState("");
