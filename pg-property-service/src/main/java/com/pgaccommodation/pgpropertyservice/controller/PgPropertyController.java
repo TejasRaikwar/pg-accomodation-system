@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/pg-properties")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class PgPropertyController {
 

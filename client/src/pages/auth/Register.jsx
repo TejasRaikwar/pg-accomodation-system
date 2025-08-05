@@ -28,6 +28,7 @@ const Register = () => {
     try {
       const res = await axios.post("/api/auth/register", formData);
       setSuccess(res.data);
+      console.log(res.data)
       setError("");
 
       // Redirect after 1.5s

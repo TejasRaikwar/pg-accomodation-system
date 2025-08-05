@@ -1,18 +1,17 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8085"; // Change this if you move to prod
+const BASE_URL = "http://localhost:8085"; // API Gateway URL
 
-// Create Axios instance
 const api = axios.create({
   baseURL: BASE_URL,
+  withCredentials: true, // ⬅️ important for cookies/auth if needed
 });
 
-// Automatically attach JWT token from localStorage (or wherever you store it)
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
     if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      config.headers["Authorization"] = `Bearer ${token}`;
     }
     return config;
   },

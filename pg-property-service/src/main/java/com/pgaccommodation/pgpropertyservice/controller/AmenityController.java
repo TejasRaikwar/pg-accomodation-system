@@ -20,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/amenities")
-@CrossOrigin(origins = "*")
 @RequiredArgsConstructor
 public class AmenityController {
 
