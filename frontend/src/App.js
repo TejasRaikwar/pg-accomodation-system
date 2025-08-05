@@ -1,18 +1,17 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Contact from './pages/Contact';
-function App() {
+import { Outlet } from "react-router-dom";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar"
+import "./App.css"
+const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<Layout />}>
-            <Route index element={<Home/>}/>
-            <Route path=''
-        </Route>
-      </Routes>
-    </Router>
+    <>
+      <Navbar />
+      <main className="min-h-screen p-4">
+        <Outlet />
+      </main>
+      <Footer />
+    </>
   );
-}
+};
 
 export default App;
