@@ -1,51 +1,63 @@
-import { Link } from "react-router-dom";
-import "./Navbar.css"
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-const Navbar = () => {
-    const { user, logout } = useAuth();
 
-    return (
-        <nav className="navbar-main">
-            <div><Link to="/" className="site-name-link site-name">PG Accommodations</Link></div>
-            <div className="navbar-login-register">
-                {user ? (
-                    <>
-                        {user.userType === "ADMIN" && <Link to="/admin/dashboard" className="site-name-link">Admin</Link>}
-                        {user.userType === "OWNER" && <Link to="/owner/dashboard" className="site-name-link">Owner</Link>}
-                        {user.userType === "TENANT" && <Link to="/tenant/dashboard" className="site-name-link">Tenant</Link>}
-                        <button onClick={logout}>Logout</button>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/login" className="site-name-link">Login</Link> | <Link to="/register" className="site-name-link">Register</Link>
-                    </>
-                )}
-            </div>
-        </nav>
-    );
+const Navbar = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
+  return (
+    <nav className="bg-blue-600 text-white shadow-md px-6 py-3 flex items-center justify-between">
+      {/* Left: Site Name */}
+      <div className="text-xl font-bold">
+        <Link to="/" className="hover:text-gray-200">
+          PG Accommodations
+        </Link>
+      </div>
+
+      {/* Right: Navigation Links */}
+      <div className="flex items-center space-x-4">
+        {user ? (
+          <>
+            {user.userType === "ADMIN" && (
+              <Link to="/admin/dashboard" className="hover:text-gray-200">
+                Admin
+              </Link>
+            )}
+            {user.userType === "OWNER" && (
+              <Link to="/owner/dashboard" className="hover:text-gray-200">
+                Owner
+              </Link>
+            )}
+            {user.userType === "TENANT" && (
+              <Link to="/tenant/dashboard" className="hover:text-gray-200">
+                Tenant
+              </Link>
+            )}
+            <button
+              onClick={handleLogout}
+              className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+            >
+              Logout
+            </button>
+          </>
+        ) : (
+          <>
+            <Link to="/login" className="hover:text-gray-200">
+              Login
+            </Link>
+            <Link to="/register" className="hover:text-gray-200">
+              Register
+            </Link>
+          </>
+        )}
+      </div>
+    </nav>
+  );
 };
 
 export default Navbar;
-
-
-/*
-
-
-    <nav>
-          <Link to="/">PG Accommodations</Link>
-      {user ? (
-        <>
-          {user.userType === "ADMIN" && <Link to="/admin/dashboard">Admin</Link>}
-          {user.userType === "OWNER" && <Link to="/owner/dashboard">Owner</Link>}
-          {user.userType === "TENANT" && <Link to="/tenant/dashboard">Tenant</Link>}
-          <button onClick={logout}>Logout</button>
-        </>
-      ) : (
-        <>
-          <Link to="/login">Login</Link> | <Link to="/register">Register</Link>
-        </>
-      )}
-    </nav>
-
-
-*/

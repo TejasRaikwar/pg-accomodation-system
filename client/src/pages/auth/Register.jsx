@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "../../services/api";
+import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
 
 const Register = () => {
@@ -11,7 +11,7 @@ const Register = () => {
     email: "",
     fullName: "",
     phone: "",
-    userType: "TENANT", 
+    userType: "", // <-- No default value
   });
 
   const [error, setError] = useState("");
@@ -25,17 +25,20 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!formData.userType) {
+      setError("Please select a role (Tenant or Owner)");
+      return;
+    }
+
     try {
-      const res = await axios.post("/api/auth/register", formData);
-      setSuccess(res.data);
-      console.log(res.data)
+      const res = await api.post("/api/auth/register", formData);
+      setSuccess("Registration successful!");
+      console.log("Register response:", res.data);
       setError("");
 
-      // Redirect after 1.5s
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
+      console.error("Register error:", err);
       setSuccess("");
       setError(err.response?.data || "Registration failed");
     }
@@ -99,7 +102,6 @@ const Register = () => {
           required
         />
 
-        {/* Role Selection (Only OWNER or TENANT) */}
         <select
           name="userType"
           value={formData.userType}
@@ -107,6 +109,7 @@ const Register = () => {
           className="w-full border p-2 rounded"
           required
         >
+          <option value="">-- Select Role --</option>
           <option value="TENANT">Tenant</option>
           <option value="OWNER">Owner</option>
         </select>
