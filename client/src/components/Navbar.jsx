@@ -25,17 +25,17 @@ const Navbar = () => {
           <>
             {user.userType === "ADMIN" && (
               <Link to="/admin/dashboard" className="hover:text-gray-200">
-                Admin
+                {user.username}
               </Link>
             )}
             {user.userType === "OWNER" && (
               <Link to="/owner/dashboard" className="hover:text-gray-200">
-                Owner
+                {user.username}
               </Link>
             )}
             {user.userType === "TENANT" && (
               <Link to="/tenant/dashboard" className="hover:text-gray-200">
-                Tenant
+                {user.username}
               </Link>
             )}
             <button

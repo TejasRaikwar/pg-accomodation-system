@@ -18,18 +18,23 @@ const Login = () => {
     setError("");
 
     try {
-      // ✅ 1. Login and get token
+      // 1. Login and get token
       const res = await api.post("/api/auth/login", formData);
       const token = res.data.token;
 
-      // ✅ 2. Save token
-      login(token); // this saves to localStorage and context
+      // 2. Fetch user info
+      const userRes = await api.get("/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const userData = userRes.data;
 
-      // ✅ 3. Fetch user details
-      const userRes = await api.get("/api/users/me");
-      const role = userRes.data.userType;
+      // 3. Save token and user in context/localStorage
+      login(token, userData);
 
-      // ✅ 4. Redirect based on role
+      // 4. Redirect based on role
+      const role = userData.userType;
       if (role === "ADMIN") navigate("/admin/dashboard");
       else if (role === "OWNER") navigate("/owner/dashboard");
       else if (role === "TENANT") navigate("/tenant/dashboard");
