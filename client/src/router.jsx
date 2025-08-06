@@ -1,3 +1,70 @@
+import { createBrowserRouter } from "react-router-dom";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import OwnerDashboard from "./pages/owner/OwnerDashboard";
+import TenantDashboard from "./pages/tenant/TenantDashboard";
+import HomePage from "./pages/public/HomePage";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import App from "./App";
+import RegisterPG from "./pages/owner/RegisterPG";
+import ViewListedPGs from "./pages/owner/ViewListedPGs";
+import OwnerLayout from "./layouts/OwnerLayout";
+import AdminLayout from "./layouts/AdminLayout";
+import TenantLayout from "./layouts/TenantLayout";
+
+
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "login", element: <Login /> },
+      { path: "register", element: <Register /> },
+
+      // ADMIN
+            {
+        path: "admin",
+        element: <AdminLayout />,
+        children: [
+          { path: "dashboard", element: <AdminDashboard /> },
+        ],
+      },
+
+      // OWNER
+     {
+        path: "owner",
+        element: <OwnerLayout />, 
+        children: [
+          { path: "dashboard", element: <OwnerDashboard /> },
+          { path: "register-pg", element: <RegisterPG /> },
+          { path: "pg-list", element: <ViewListedPGs /> },
+        ],
+      },
+
+      // TENANT
+       {
+        path: "tenant",
+        element: <TenantLayout />,
+        children: [
+          { path: "dashboard", element: <TenantDashboard /> },
+        ],
+      },
+    ],
+  },
+]);
+
+export default router;
+
+
+
+
+
+
+
+
+
 // import { createBrowserRouter } from "react-router-dom";
 // import AdminDashboard from "./pages/admin/AdminDashboard";
 // import OwnerDashboard from "./pages/owner/OwnerDashboard";
@@ -38,30 +105,33 @@
 
 
 
-import { createBrowserRouter } from "react-router-dom";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import OwnerDashboard from "./pages/owner/OwnerDashboard";
-import TenantDashboard from "./pages/tenant/TenantDashboard";
-import HomePage from "./pages/public/HomePage";
-import Login from "./pages/auth/Login";
-import App from "./App";
-import Register from "./pages/auth/Register";
+// import { createBrowserRouter } from "react-router-dom";
+// import AdminDashboard from "./pages/admin/AdminDashboard";
+// import OwnerDashboard from "./pages/owner/OwnerDashboard";
+// import TenantDashboard from "./pages/tenant/TenantDashboard";
+// import HomePage from "./pages/public/HomePage";
+// import Login from "./pages/auth/Login";
+// import App from "./App";
+// import Register from "./pages/auth/Register";
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    children: [
-      { index: true, element: <HomePage /> },
-      { path: "login", element: <Login /> },
-      { path: "register", element: <Register /> },
+// const router = createBrowserRouter([
+//   {
+//     path: "/",
+//     element: <App />,
+//     children: [
+//       { index: true, element: <HomePage /> },
+//       { path: "login", element: <Login /> },
+//       { path: "register", element: <Register /> },
 
-      // Removed ProtectedRoute wrappers
-      { path: "admin/dashboard", element: <AdminDashboard /> },
-      { path: "owner/dashboard", element: <OwnerDashboard /> },
-      { path: "tenant/dashboard", element: <TenantDashboard /> },
-    ],
-  },
-]);
+//       // Removed ProtectedRoute wrappers
+//       { path: "admin/dashboard", element: <AdminDashboard /> },
+//       { path: "owner/dashboard", element: <OwnerDashboard /> },
+//       { path: "tenant/dashboard", element: <TenantDashboard /> },
+//     ],
+//   },
+// ]);
 
-export default router;
+// export default router;
+
+
+

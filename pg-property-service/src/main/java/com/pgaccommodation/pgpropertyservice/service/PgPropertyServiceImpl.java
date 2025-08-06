@@ -42,4 +42,10 @@ public class PgPropertyServiceImpl implements PgPropertyService {
 	public void deletePgProperty(Integer id) {
 		pgPropertyRepository.deleteById(id);
 	}
+	
+	@Override
+	public List<PgProperty> getPgPropertiesByOwnerId(Integer ownerId) {
+	    return pgPropertyRepository.findByOwnerId(ownerId);
+	}
+
 }

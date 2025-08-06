@@ -11,6 +11,8 @@ public interface PgPropertyService {
 	List<PgProperty> getAllPgProperties();
 
 	List<PgProperty> getPgPropertiesByCity(String city);
+	
+	List<PgProperty> getPgPropertiesByOwnerId(Integer ownerId);
 
 	Optional<PgProperty> getPgPropertyById(Integer id);
 

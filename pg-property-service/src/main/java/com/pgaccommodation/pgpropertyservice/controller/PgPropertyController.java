@@ -61,4 +61,11 @@ public class PgPropertyController {
 		pgPropertyService.deletePgProperty(id);
 		return ResponseEntity.noContent().build();
 	}
+	
+	@GetMapping("/owner/{ownerId}")
+	public ResponseEntity<List<PgProperty>> getPgsByOwnerId(@PathVariable Integer ownerId) {
+	    List<PgProperty> pgs = pgPropertyService.getPgPropertiesByOwnerId(ownerId);
+	    return ResponseEntity.ok(pgs);
+	}
+
 }
