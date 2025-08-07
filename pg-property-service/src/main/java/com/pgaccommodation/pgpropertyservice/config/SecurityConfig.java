@@ -26,7 +26,11 @@ public class SecurityConfig {
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable())
 				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/actuator/**").permitAll().anyRequest().authenticated())
+						auth -> 
+						auth.requestMatchers("/actuator/**").permitAll()
+						.requestMatchers("/api/pg-properties").permitAll()
+						.requestMatchers("/api/pg-properties/").permitAll()
+						.anyRequest().authenticated())
 				.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
 	}

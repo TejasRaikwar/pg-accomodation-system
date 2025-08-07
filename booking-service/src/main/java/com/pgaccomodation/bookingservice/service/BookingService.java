@@ -12,4 +12,6 @@ public interface BookingService {
     List<Booking> getBookingsByUserId(Integer userId);
     List<Booking> getBookingsByPgId(Integer pgId);
     void cancelBooking(Integer id);
+    void updateBookingStatus(Integer bookingId, String status);
+
 }

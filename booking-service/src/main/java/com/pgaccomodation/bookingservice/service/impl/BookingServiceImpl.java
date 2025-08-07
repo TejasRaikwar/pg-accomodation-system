@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.pgaccomodation.bookingservice.entity.Booking;
+import com.pgaccomodation.bookingservice.exception.ResourceNotFoundException;
 import com.pgaccomodation.bookingservice.repository.BookingRepository;
 import com.pgaccomodation.bookingservice.service.BookingService;
 
@@ -52,4 +53,20 @@ public class BookingServiceImpl implements BookingService {
             bookingRepository.save(booking);
         });
     }
+    
+    @Override
+    public void updateBookingStatus(Integer bookingId, String status) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id " + bookingId));
+
+        List<String> allowedStatuses = List.of("PENDING", "CONFIRMED", "CANCELLED");
+
+        if (!allowedStatuses.contains(status.toUpperCase())) {
+            throw new IllegalArgumentException("Invalid booking status: " + status);
+        }
+
+        booking.setStatus(status.toUpperCase());
+        bookingRepository.save(booking);
+    }
+
 }

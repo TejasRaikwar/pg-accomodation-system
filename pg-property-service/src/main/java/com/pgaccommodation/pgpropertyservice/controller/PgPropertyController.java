@@ -33,12 +33,21 @@ public class PgPropertyController {
 	}
 
 	// Anyone authenticated (ADMIN, OWNER, TENANT) can view all PGs
-	@PreAuthorize("isAuthenticated()")
+//	@PreAuthorize("isAuthenticated()")
+//	@GetMapping
+//	public ResponseEntity<List<PgProperty>> getAllPgProperties() {
+//		return ResponseEntity.ok(pgPropertyService.getAllPgProperties());
+//	}
+
+	// Allow everyone (including unauthenticated users) to view all PG properties
 	@GetMapping
 	public ResponseEntity<List<PgProperty>> getAllPgProperties() {
-		return ResponseEntity.ok(pgPropertyService.getAllPgProperties());
+	    return ResponseEntity.ok(pgPropertyService.getAllPgProperties());
 	}
-
+	
+	
+	
+	
 	// Anyone authenticated can search PGs by city
 	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/city/{city}")
@@ -53,6 +62,7 @@ public class PgPropertyController {
 		return pgPropertyService.getPgPropertyById(id).map(ResponseEntity::ok)
 				.orElse(ResponseEntity.notFound().build());
 	}
+	
 
 	// Only OWNERs or ADMINs can delete PG
 	@PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")

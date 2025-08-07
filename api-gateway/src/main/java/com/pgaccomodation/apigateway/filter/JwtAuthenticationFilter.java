@@ -23,7 +23,8 @@ public class JwtAuthenticationFilter implements GlobalFilter {
 
     private static final List<String> openEndpoints = List.of(
             "/api/auth/login",
-            "/api/auth/register"
+            "/api/auth/register",
+            "/api/pg-properties"
     );
 
     @Override

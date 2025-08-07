@@ -1,4 +1,4 @@
-package com.pgaccommodation.pgpropertyservice.entity;
+package com.pgaccomodation.bookingservice.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class PgProperty {
 
 	@Id

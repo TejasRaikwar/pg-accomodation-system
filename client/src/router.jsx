@@ -6,11 +6,14 @@ import HomePage from "./pages/public/HomePage";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import App from "./App";
+import ProtectedRoute from "./routes/ProtectedRoute";
 import RegisterPG from "./pages/owner/RegisterPG";
 import ViewListedPGs from "./pages/owner/ViewListedPGs";
 import OwnerLayout from "./layouts/OwnerLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import TenantLayout from "./layouts/TenantLayout";
+import MyBookings from "./pages/tenant/MyBookings";
+import AvailablePGs from "./pages/tenant/AvailablePGs";
 
 
 
@@ -24,31 +27,48 @@ const router = createBrowserRouter([
       { path: "register", element: <Register /> },
 
       // ADMIN
-            {
-        path: "admin",
-        element: <AdminLayout />,
+      {
+        element: <ProtectedRoute allowedRoles={["ADMIN"]} />,
         children: [
-          { path: "dashboard", element: <AdminDashboard /> },
+          {
+            path: "admin",
+            element: <AdminLayout />,
+            children: [
+              { path: "dashboard", element: <AdminDashboard /> },
+            ],
+          },
         ],
       },
 
       // OWNER
-     {
-        path: "owner",
-        element: <OwnerLayout />, 
+      {
+        element: <ProtectedRoute allowedRoles={["OWNER"]} />,
         children: [
-          { path: "dashboard", element: <OwnerDashboard /> },
-          { path: "register-pg", element: <RegisterPG /> },
-          { path: "pg-list", element: <ViewListedPGs /> },
+          {
+            path: "owner",
+            element: <OwnerLayout />,
+            children: [
+              { path: "dashboard", element: <OwnerDashboard /> },
+              { path: "register-pg", element: <RegisterPG /> },
+              { path: "pg-list", element: <ViewListedPGs /> },
+            ],
+          },
         ],
       },
 
       // TENANT
-       {
-        path: "tenant",
-        element: <TenantLayout />,
+      {
+        element: <ProtectedRoute allowedRoles={["TENANT"]} />,
         children: [
-          { path: "dashboard", element: <TenantDashboard /> },
+          {
+            path: "tenant",
+            element: <TenantLayout />,
+            children: [
+              { path: "dashboard", element: <TenantDashboard /> },
+              { path: "my-bookings", element: <MyBookings /> },
+              { path: "available-pgs", element: <AvailablePGs />},
+            ],
+          },
         ],
       },
     ],
