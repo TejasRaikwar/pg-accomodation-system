@@ -22,7 +22,7 @@ const AdminLayout = () => (
         &copy; {new Date().getFullYear()} PG Accommodation Admin
       </div>
     </aside>
-    <main className="flex-1 bg-white p-8 rounded-l-3xl shadow-xl">
+    <main className="flex-1 bg-white p-8 shadow-xl">
       <Outlet />
     </main>
   </div>

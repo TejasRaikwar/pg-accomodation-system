@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { toast } from "react-toastify";
+import { useAuth } from "../../context/AuthContext";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +11,7 @@ const AdminUsers = () => {
   const [sortField, setSortField] = useState("userid");
   const [sortOrder, setSortOrder] = useState("asc");
   const [search, setSearch] = useState("");
+  const { user: loggedInUser } = useAuth();
 
   const fetchUsers = () => {
     api.get("/api/users")
@@ -135,7 +137,9 @@ const AdminUsers = () => {
                   <td className="border px-2 py-1">{u.isActive ? "Yes" : "No"}</td>
                   <td className="border px-2 py-1">
                     <button className="text-blue-600 mr-2" onClick={() => handleEdit(u)}>Edit</button>
-                    <button className="text-red-600" onClick={() => handleDelete(u.userid)}>Delete</button>
+                    {loggedInUser?.userid !== u.userid && (
+                      <button className="text-red-600" onClick={() => handleDelete(u.userid)}>Delete</button>
+                    )}
                   </td>
                 </tr>
               ))}
