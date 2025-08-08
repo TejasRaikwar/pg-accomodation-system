@@ -1,36 +1,33 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import { toast } from "react-toastify";
 
-const ViewPGs = () => {
-  const user = JSON.parse(localStorage.getItem("user"));
+const AdminPGs = () => {
   const [pgs, setPgs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [editPG, setEditPG] = useState(null);
-  const [editForm, setEditForm] = useState({});
+  const [editForm, setEditForm] = useState({ name: "", city: "", ownerId: "", pgType: "", pricePerBed: "" });
+  const [viewPG, setViewPG] = useState(null);
+
+  const fetchPGs = () => {
+    api.get("/api/pg-properties")
+      .then(res => setPgs(res.data))
+      .catch(() => toast.error("Failed to fetch PGs"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    const fetchPGs = async () => {
-      try {
-        const res = await api.get(`/api/pg-properties/owner/${user.userid}`);
-        setPgs(res.data);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load PG listings.");
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchPGs();
-  }, [user.userid]);
+  }, []);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this PG?")) return;
     try {
       await api.delete(`/api/pg-properties/${id}`);
+      toast.success("PG deleted successfully");
       setPgs(pgs.filter(pg => pg.pgId !== id));
     } catch {
-      setError("Failed to delete PG");
+      toast.error("Failed to delete PG");
     }
   };
 
@@ -59,7 +56,7 @@ const ViewPGs = () => {
       rating: pg.rating?.parsedValue ?? pg.rating ?? "",
       verified: pg.verified ?? false,
     });
-  };
+  }
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -71,41 +68,60 @@ const ViewPGs = () => {
     try {
       const pgId = editPG.pgId;
       const res = await api.put(`/api/pg-properties/${pgId}`, { ...editPG, ...editForm });
+      toast.success("PG updated successfully");
       setPgs(pgs.map(pg => pg.pgId === pgId ? res.data : pg));
       setEditPG(null);
     } catch {
-      setError("Failed to update PG");
+      toast.error("Failed to update PG");
+    }
+  };
+
+  const handleView = async (id) => {
+    try {
+      const res = await api.get(`/api/pg-properties/${id}`);
+      setViewPG(res.data);
+    } catch {
+      toast.error("Failed to fetch PG details");
     }
   };
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">📄 Your PG Listings</h1>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p className="text-red-500">{error}</p>
-      ) : pgs.length === 0 ? (
-        <p>No PGs listed yet.</p>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {pgs.map((pg) => (
-            <div
-              key={pg.pgId}
-              className="bg-white shadow-md rounded-lg p-5 border relative"
-            >
-              <h2 className="text-lg font-semibold">{pg.name}</h2>
-              <p className="text-sm text-gray-600">City: {pg.city}</p>
-              <p className="text-sm text-gray-600">PG Type: {pg.pgType.replace("_", " ")}</p>
-              <p className="text-sm text-gray-600">Beds: {pg.availableRooms}/{pg.totalRooms}</p>
-              <p className="text-sm text-gray-600">₹ {pg.pricePerBed?.parsedValue ?? pg.pricePerBed} per bed</p>
-              <div className="mt-3 flex gap-2">
-                <button className="text-green-600" onClick={() => handleEdit(pg)}>Edit</button>
-                <button className="text-red-600" onClick={() => handleDelete(pg.pgId)}>Delete</button>
-              </div>
-            </div>
-          ))}
+      <h2 className="text-2xl font-bold mb-4">All PG Properties</h2>
+      {loading ? <p>Loading...</p> : (
+        <div className="overflow-x-auto">
+          <table className="min-w-full border rounded-lg shadow-md">
+            <thead>
+              <tr className="bg-blue-100 text-blue-900">
+                <th className="px-4 py-2 font-semibold rounded-tl-lg">ID</th>
+                <th className="px-4 py-2 font-semibold">Name</th>
+                <th className="px-4 py-2 font-semibold">City</th>
+                <th className="px-4 py-2 font-semibold">Owner ID</th>
+                <th className="px-4 py-2 font-semibold">Type</th>
+                <th className="px-4 py-2 font-semibold">Price/Bed</th>
+                <th className="px-4 py-2 font-semibold rounded-tr-lg">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pgs.map((pg, idx) => (
+                <tr key={pg.pgId} className={idx % 2 === 0 ? "bg-white" : "bg-blue-50 hover:bg-blue-100 transition"}>
+                  <td className="px-4 py-2 border-b">{pg.pgId}</td>
+                  <td className="px-4 py-2 border-b">{pg.name}</td>
+                  <td className="px-4 py-2 border-b">{pg.city}</td>
+                  <td className="px-4 py-2 border-b">{pg.ownerId}</td>
+                  <td className="px-4 py-2 border-b">{pg.pgType}</td>
+                  <td className="px-4 py-2 border-b">{pg.pricePerBed?.parsedValue ?? pg.pricePerBed}</td>
+                  <td className="px-4 py-2 border-b">
+                    <div className="flex gap-4 justify-center">
+                      <button className="bg-blue-100 text-blue-700 px-3 py-1 rounded shadow hover:bg-blue-200 transition font-medium" onClick={() => handleView(pg.pgId)}>View</button>
+                      <button className="bg-green-100 text-green-700 px-3 py-1 rounded shadow hover:bg-green-200 transition font-medium" onClick={() => handleEdit(pg)}>Edit</button>
+                      <button className="bg-red-100 text-red-700 px-3 py-1 rounded shadow hover:bg-red-200 transition font-medium" onClick={() => handleDelete(pg.pgId)}>Delete</button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -226,8 +242,44 @@ const ViewPGs = () => {
           </div>
         </div>
       )}
+
+      {/* View Modal */}
+      {viewPG && (
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded shadow-lg max-w-md w-full overflow-y-auto max-h-[90vh]">
+            <h3 className="text-xl font-bold mb-4">PG Details</h3>
+            <div className="space-y-2 text-sm">
+              <p><strong>ID:</strong> {viewPG.pgId ?? viewPG.id}</p>
+              <p><strong>Name:</strong> {viewPG.name}</p>
+              <p><strong>Owner ID:</strong> {viewPG.ownerId}</p>
+              <p><strong>Address:</strong> {viewPG.address}</p>
+              <p><strong>City:</strong> {viewPG.city}</p>
+              <p><strong>State:</strong> {viewPG.state}</p>
+              <p><strong>Pincode:</strong> {viewPG.pincode}</p>
+              <p><strong>Landmark:</strong> {viewPG.landmark}</p>
+              <p><strong>Latitude:</strong> {viewPG.latitude?.parsedValue ?? viewPG.latitude}</p>
+              <p><strong>Longitude:</strong> {viewPG.longitude?.parsedValue ?? viewPG.longitude}</p>
+              <p><strong>Description:</strong> {viewPG.description}</p>
+              <p><strong>Total Rooms:</strong> {viewPG.totalRooms}</p>
+              <p><strong>Available Rooms:</strong> {viewPG.availableRooms}</p>
+              <p><strong>Price/Bed:</strong> {viewPG.pricePerBed?.parsedValue ?? viewPG.pricePerBed}</p>
+              <p><strong>Deposit Amount:</strong> {viewPG.depositAmount?.parsedValue ?? viewPG.depositAmount}</p>
+              <p><strong>Food Included:</strong> {viewPG.foodIncluded ? "Yes" : "No"}</p>
+              <p><strong>AC Available:</strong> {viewPG.acAvailable ? "Yes" : "No"}</p>
+              <p><strong>WiFi Available:</strong> {viewPG.wifiAvailable ? "Yes" : "No"}</p>
+              <p><strong>Laundry Available:</strong> {viewPG.laundryAvailable ? "Yes" : "No"}</p>
+              <p><strong>Type:</strong> {viewPG.pgType}</p>
+              <p><strong>Rating:</strong> {viewPG.rating?.parsedValue ?? viewPG.rating}</p>
+              <p><strong>Verified:</strong> {viewPG.verified ? "Yes" : "No"}</p>
+              <p><strong>Created At:</strong> {viewPG.createdAt ?? "-"}</p>
+              <p><strong>Updated At:</strong> {viewPG.updatedAt ?? "-"}</p>
+            </div>
+            <button className="mt-4 px-4 py-2 bg-blue-600 text-white rounded" onClick={() => setViewPG(null)}>Close</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ViewPGs;
+export default AdminPGs;

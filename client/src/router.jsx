@@ -15,6 +15,9 @@ import TenantLayout from "./layouts/TenantLayout";
 import MyBookings from "./pages/tenant/MyBookings";
 import AvailablePGs from "./pages/tenant/AvailablePGs";
 import OwnerTenants from "./pages/owner/OwnerTenants";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminPGs from "./pages/admin/AdminPGs";
+import AdminBookings from "./pages/admin/AdminBookings";
 
 
 
@@ -36,6 +39,9 @@ const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
               { path: "dashboard", element: <AdminDashboard /> },
+              { path: "users", element: <AdminUsers /> },
+              { path: "pgs", element: <AdminPGs /> },
+              { path: "bookings", element: <AdminBookings /> },
             ],
           },
         ],

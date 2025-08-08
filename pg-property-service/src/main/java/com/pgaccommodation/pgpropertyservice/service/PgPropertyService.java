@@ -17,4 +17,6 @@ public interface PgPropertyService {
 	Optional<PgProperty> getPgPropertyById(Integer id);
 
 	void deletePgProperty(Integer id);
+	
+	PgProperty updatePgProperty(Integer id, PgProperty pgProperty);
 }

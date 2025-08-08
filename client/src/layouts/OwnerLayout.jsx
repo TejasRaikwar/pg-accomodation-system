@@ -28,7 +28,7 @@ const OwnerLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 bg-white p-8 rounded-l-3xl shadow-xl">
+      <main className="flex-1 bg-white p-8  shadow-xl">
         <Outlet />
       </main>
     </div>
