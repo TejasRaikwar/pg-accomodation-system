@@ -14,6 +14,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import TenantLayout from "./layouts/TenantLayout";
 import MyBookings from "./pages/tenant/MyBookings";
 import AvailablePGs from "./pages/tenant/AvailablePGs";
+import OwnerTenants from "./pages/owner/OwnerTenants";
 
 
 
@@ -51,6 +52,7 @@ const router = createBrowserRouter([
               { path: "dashboard", element: <OwnerDashboard /> },
               { path: "register-pg", element: <RegisterPG /> },
               { path: "pg-list", element: <ViewListedPGs /> },
+              { path: "tenants", element: <OwnerTenants /> },
             ],
           },
         ],
@@ -66,7 +68,7 @@ const router = createBrowserRouter([
             children: [
               { path: "dashboard", element: <TenantDashboard /> },
               { path: "my-bookings", element: <MyBookings /> },
-              { path: "available-pgs", element: <AvailablePGs />},
+              { path: "available-pgs", element: <AvailablePGs /> },
             ],
           },
         ],

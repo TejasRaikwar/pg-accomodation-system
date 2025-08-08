@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgaccomodation.bookingservice.dto.BookingWithUsername;
 import com.pgaccomodation.bookingservice.entity.Booking;
 import com.pgaccomodation.bookingservice.service.BookingService;
 
@@ -65,6 +66,41 @@ public class BookingController {
 
         bookingService.updateBookingStatus(bookingId, status);
         return ResponseEntity.ok("Booking status updated to " + status);
+    }
+    
+//    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
+//    @GetMapping("/pg/{pgId}/owner/{ownerId}")
+//    public ResponseEntity<List<Booking>> getBookingsForPgByOwner(
+//            @PathVariable Integer pgId,
+//            @PathVariable Integer ownerId) {
+//        return ResponseEntity.ok(bookingService.getBookingsByPgIdAndOwner(pgId, ownerId));
+//    }
+
+    
+    @PreAuthorize("hasRole('OWNER')")
+    @GetMapping("/pg/{pgId}/owner/{ownerId}")
+    public ResponseEntity<List<BookingWithUsername>> getEnrichedBookings(
+            @PathVariable Integer pgId,
+            @PathVariable Integer ownerId) {
+        return ResponseEntity.ok(bookingService.getBookingsWithUserInfoByPgId(pgId, ownerId));
+    }
+    
+    
+    // Get bookings of a PG (only accessible by the owner)
+//    @PreAuthorize("hasRole('OWNER')")
+//    @GetMapping("/pg/{pgId}/owner/{ownerId}")
+//    public ResponseEntity<List<BookingDetails>> getBookingsByPgAndOwner(
+//            @PathVariable Integer pgId,
+//            @PathVariable Integer ownerId) {
+//        List<BookingDetails> result = bookingService.getBookingsByPgAndOwner(pgId, ownerId);
+//        return ResponseEntity.ok(result);
+//    }
+    
+    
+    @PreAuthorize("hasAnyRole('OWNER', 'ADMIN')")
+    @GetMapping("/pg/{pgId}/with-usernames")
+    public ResponseEntity<List<BookingWithUsername>> getBookingsWithUsernames(@PathVariable Integer pgId) {
+        return ResponseEntity.ok(bookingService.getBookingsWithUsernames(pgId));
     }
 
 }

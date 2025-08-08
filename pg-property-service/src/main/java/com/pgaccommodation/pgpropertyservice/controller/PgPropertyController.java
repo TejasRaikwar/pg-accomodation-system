@@ -32,20 +32,12 @@ public class PgPropertyController {
 		return ResponseEntity.ok(pgPropertyService.addPgProperty(pgProperty));
 	}
 
-	// Anyone authenticated (ADMIN, OWNER, TENANT) can view all PGs
-//	@PreAuthorize("isAuthenticated()")
-//	@GetMapping
-//	public ResponseEntity<List<PgProperty>> getAllPgProperties() {
-//		return ResponseEntity.ok(pgPropertyService.getAllPgProperties());
-//	}
 
 	// Allow everyone (including unauthenticated users) to view all PG properties
 	@GetMapping
 	public ResponseEntity<List<PgProperty>> getAllPgProperties() {
 	    return ResponseEntity.ok(pgPropertyService.getAllPgProperties());
 	}
-	
-	
 	
 	
 	// Anyone authenticated can search PGs by city
