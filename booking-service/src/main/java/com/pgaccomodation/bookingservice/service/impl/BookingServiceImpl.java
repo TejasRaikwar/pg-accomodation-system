@@ -8,8 +8,9 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.pgaccomodation.bookingservice.dto.BookingDetails;
+import com.pgaccomodation.bookingservice.dto.BookingResponseDTO;
 import com.pgaccomodation.bookingservice.dto.BookingWithUsername;
+import com.pgaccomodation.bookingservice.dto.PgPropertyDTO;
 import com.pgaccomodation.bookingservice.entity.Booking;
 import com.pgaccomodation.bookingservice.entity.PgProperty;
 import com.pgaccomodation.bookingservice.exception.ResourceNotFoundException;
@@ -87,56 +88,7 @@ public class BookingServiceImpl implements BookingService {
 
 		return bookingRepository.findByPgId(pgId);
 	}
-/*
-	@Override
-	public List<BookingDetails> getBookingsByPgAndOwner(Integer pgId, Integer ownerId) {
-		PgProperty pg = pgPropertyRepository.findById(pgId)
-				.orElseThrow(() -> new ResourceNotFoundException("PG not found"));
 
-		if (!pg.getOwnerId().equals(ownerId)) {
-			throw new UnauthorizedAccessException("You are not the owner of this PG");
-		}
-
-		List<Booking> bookings = bookingRepository.findByPgId(pgId);
-
-		return bookings.stream().map(booking -> {
-			// Call user-service to get user info
-			String userServiceUrl = "http://user-service/api/users/" + booking.getUserId();
-			String username = "Unknown";
-
-			try {
-				var user = restTemplate.getForObject(userServiceUrl, UserInfo.class);
-				if (user != null)
-					username = user.getUsername();
-			} catch (Exception e) {
-				// Log error, use fallback username
-				username = "Unavailable";
-			}
-
-			return new BookingDetails(booking.getId(), booking.getUserId(), username, booking.getPgId(), pg.getName(),
-					booking.getStartDate(), booking.getEndDate(), booking.getBookingDate(), booking.getStatus());
-		}).collect(Collectors.toList());
-	}
-
-	static class UserInfo {
-		private String username;
-
-		public String getUsername() {
-			return username;
-		}
-
-		public void setUsername(String username) {
-			this.username = username;
-		}
-	}
-	
-	*/
-	
-	
-//	@Override
-//    public List<BookingWithUsername> getBookingsWithUsernames(Integer pgId) {
-//        return bookingRepository.findAllWithUsernameByPgId(pgId);
-//    }
 	
 	public List<BookingWithUsername> getBookingsWithUserInfoByPgId(Integer pgId, Integer ownerId) {
 	    var pg = pgPropertyRepository.findById(pgId)
@@ -147,6 +99,57 @@ public class BookingServiceImpl implements BookingService {
 	    }
 
 	    return bookingRepository.findBookingsWithUserInfoByPgId(pgId);
+	}
+
+	@Override
+	public List<BookingResponseDTO> getEnrichedBookingsByUserId(Integer userId) {
+	    List<Booking> bookings = bookingRepository.findByUserId(userId);
+
+	    return bookings.stream().map(booking -> {
+	        BookingResponseDTO dto = new BookingResponseDTO();
+	        dto.setId(booking.getId());
+	        dto.setUserId(booking.getUserId());
+	        dto.setPgId(booking.getPgId());
+	        dto.setBookingDate(booking.getBookingDate());
+	        dto.setStartDate(booking.getStartDate());
+	        dto.setEndDate(booking.getEndDate());
+	        dto.setStatus(booking.getStatus());
+
+	        PgProperty pg = pgPropertyRepository.findById(booking.getPgId())
+	                .orElse(null);
+
+	        if (pg != null) {
+	            PgPropertyDTO pgDto = new PgPropertyDTO();
+	            pgDto.setPgId(pg.getPgId());
+	            pgDto.setOwnerId(pg.getOwnerId());
+	            pgDto.setName(pg.getName());
+	            pgDto.setAddress(pg.getAddress());
+	            pgDto.setCity(pg.getCity());
+	            pgDto.setState(pg.getState());
+	            pgDto.setPincode(pg.getPincode());
+	            pgDto.setLandmark(pg.getLandmark());
+	            pgDto.setLatitude(pg.getLatitude());
+	            pgDto.setLongitude(pg.getLongitude());
+	            pgDto.setDescription(pg.getDescription());
+	            pgDto.setTotalRooms(pg.getTotalRooms());
+	            pgDto.setAvailableRooms(pg.getAvailableRooms());
+	            pgDto.setPricePerBed(pg.getPricePerBed());
+	            pgDto.setDepositAmount(pg.getDepositAmount());
+	            pgDto.setFoodIncluded(pg.getFoodIncluded());
+	            pgDto.setAcAvailable(pg.getAcAvailable());
+	            pgDto.setWifiAvailable(pg.getWifiAvailable());
+	            pgDto.setLaundryAvailable(pg.getLaundryAvailable());
+	            pgDto.setPgType(pg.getPgType().name());
+	            pgDto.setRating(pg.getRating());
+	            pgDto.setVerified(pg.getVerified());
+	            pgDto.setCreatedAt(pg.getCreatedAt());
+	            pgDto.setUpdatedAt(pg.getUpdatedAt());
+
+	            dto.setPg(pgDto);
+	        }
+
+	        return dto;
+	    }).collect(Collectors.toList());
 	}
 
 	

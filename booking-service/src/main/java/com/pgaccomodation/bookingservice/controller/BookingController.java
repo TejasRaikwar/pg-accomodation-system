@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.pgaccomodation.bookingservice.dto.BookingResponseDTO;
 import com.pgaccomodation.bookingservice.dto.BookingWithUsername;
 import com.pgaccomodation.bookingservice.entity.Booking;
 import com.pgaccomodation.bookingservice.service.BookingService;
@@ -101,6 +102,12 @@ public class BookingController {
     @GetMapping("/pg/{pgId}/with-usernames")
     public ResponseEntity<List<BookingWithUsername>> getBookingsWithUsernames(@PathVariable Integer pgId) {
         return ResponseEntity.ok(bookingService.getBookingsWithUsernames(pgId));
+    }
+
+    @PreAuthorize("hasAnyRole('TENANT', 'ADMIN')")
+    @GetMapping("/user/{userId}/full")
+    public ResponseEntity<List<BookingResponseDTO>> getEnrichedBookingsByUser(@PathVariable Integer userId) {
+        return ResponseEntity.ok(bookingService.getEnrichedBookingsByUserId(userId));
     }
 
 }

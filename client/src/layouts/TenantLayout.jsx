@@ -9,6 +9,9 @@ const TenantLayout = () => {
     <div className="flex min-h-screen bg-gradient-to-r from-blue-50 to-blue-100">
       <aside className="w-72 bg-blue-800 text-white p-8 flex flex-col justify-between shadow-lg">
         <nav className="flex flex-col gap-4 mt-2">
+          <Link to="/tenant/dashboard" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+            <span role="img" aria-label="dashboard">📊</span> <span>Dashboard</span>
+          </Link>
           <Link to="/tenant/available-pgs" className="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-700 transition">
             <span>🏠</span> <span>Available PGs</span>
           </Link>
