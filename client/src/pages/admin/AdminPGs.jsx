@@ -4,10 +4,13 @@ import { toast } from "react-toastify";
 
 const AdminPGs = () => {
   const [pgs, setPgs] = useState([]);
+  const [sortField, setSortField] = useState("pgId");
+  const [sortOrder, setSortOrder] = useState("asc");
   const [loading, setLoading] = useState(true);
   const [editPG, setEditPG] = useState(null);
   const [editForm, setEditForm] = useState({ name: "", city: "", ownerId: "", pgType: "", pricePerBed: "" });
   const [viewPG, setViewPG] = useState(null);
+  const [search, setSearch] = useState("");
 
   const fetchPGs = () => {
     api.get("/api/pg-properties")
@@ -76,6 +79,16 @@ const AdminPGs = () => {
     }
   };
 
+  // Sorting handler
+  const handleSort = (field) => {
+    if (sortField === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortOrder("asc");
+    }
+  };
+
   const handleView = async (id) => {
     try {
       const res = await api.get(`/api/pg-properties/${id}`);
@@ -88,38 +101,73 @@ const AdminPGs = () => {
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">All PG Properties</h2>
+      {/* Search Bar */}
+      <div className="mb-4 flex items-center gap-4">
+        <label htmlFor="pg-search" className="font-medium text-gray-700">Search:</label>
+        <input
+          id="pg-search"
+          type="text"
+          className="border px-3 py-2 rounded w-64 focus:outline-none focus:ring-2 focus:ring-blue-300"
+          placeholder="Type name, city, owner ID, type, or price..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
+      </div>
       {loading ? <p>Loading...</p> : (
         <div className="overflow-x-auto">
           <table className="min-w-full border rounded-lg shadow-md">
             <thead>
               <tr className="bg-blue-100 text-blue-900">
-                <th className="px-4 py-2 font-semibold rounded-tl-lg">ID</th>
-                <th className="px-4 py-2 font-semibold">Name</th>
-                <th className="px-4 py-2 font-semibold">City</th>
-                <th className="px-4 py-2 font-semibold">Owner ID</th>
-                <th className="px-4 py-2 font-semibold">Type</th>
-                <th className="px-4 py-2 font-semibold">Price/Bed</th>
+                <th className="px-4 py-2 font-semibold rounded-tl-lg cursor-pointer" onClick={() => handleSort("pgId")}>ID {sortField === "pgId" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
+                <th className="px-4 py-2 font-semibold cursor-pointer" onClick={() => handleSort("name")}>Name {sortField === "name" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
+                <th className="px-4 py-2 font-semibold cursor-pointer" onClick={() => handleSort("city")}>City {sortField === "city" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
+                <th className="px-4 py-2 font-semibold cursor-pointer" onClick={() => handleSort("ownerId")}>Owner ID {sortField === "ownerId" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
+                <th className="px-4 py-2 font-semibold cursor-pointer" onClick={() => handleSort("pgType")}>Type {sortField === "pgType" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
+                <th className="px-4 py-2 font-semibold cursor-pointer" onClick={() => handleSort("pricePerBed")}>Price/Bed {sortField === "pricePerBed" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</th>
                 <th className="px-4 py-2 font-semibold rounded-tr-lg">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {pgs.map((pg, idx) => (
-                <tr key={pg.pgId} className={idx % 2 === 0 ? "bg-white" : "bg-blue-50 hover:bg-blue-100 transition"}>
-                  <td className="px-4 py-2 border-b">{pg.pgId}</td>
-                  <td className="px-4 py-2 border-b">{pg.name}</td>
-                  <td className="px-4 py-2 border-b">{pg.city}</td>
-                  <td className="px-4 py-2 border-b">{pg.ownerId}</td>
-                  <td className="px-4 py-2 border-b">{pg.pgType}</td>
-                  <td className="px-4 py-2 border-b">{pg.pricePerBed?.parsedValue ?? pg.pricePerBed}</td>
-                  <td className="px-4 py-2 border-b">
-                    <div className="flex gap-4 justify-center">
-                      <button className="bg-blue-100 text-blue-700 px-3 py-1 rounded shadow hover:bg-blue-200 transition font-medium" onClick={() => handleView(pg.pgId)}>View</button>
-                      <button className="bg-green-100 text-green-700 px-3 py-1 rounded shadow hover:bg-green-200 transition font-medium" onClick={() => handleEdit(pg)}>Edit</button>
-                      <button className="bg-red-100 text-red-700 px-3 py-1 rounded shadow hover:bg-red-200 transition font-medium" onClick={() => handleDelete(pg.pgId)}>Delete</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
+              {[...pgs]
+                .filter(pg => {
+                  const q = search.trim().toLowerCase();
+                  if (!q) return true;
+                  return (
+                    pg.name?.toLowerCase().includes(q) ||
+                    pg.city?.toLowerCase().includes(q) ||
+                    pg.ownerId?.toString().toLowerCase().includes(q) ||
+                    pg.pgType?.toLowerCase().includes(q) ||
+                    (pg.pricePerBed?.parsedValue ?? pg.pricePerBed)?.toString().toLowerCase().includes(q)
+                  );
+                })
+                .sort((a, b) => {
+                  let valA = a[sortField];
+                  let valB = b[sortField];
+                  if (valA == null) valA = "";
+                  if (valB == null) valB = "";
+                  if (typeof valA === "string") valA = valA.toLowerCase();
+                  if (typeof valB === "string") valB = valB.toLowerCase();
+                  if (valA < valB) return sortOrder === "asc" ? -1 : 1;
+                  if (valA > valB) return sortOrder === "asc" ? 1 : -1;
+                  return 0;
+                })
+                .map((pg, idx) => (
+                  <tr key={pg.pgId} className={idx % 2 === 0 ? "bg-white" : "bg-blue-50 hover:bg-blue-100 transition"}>
+                    <td className="px-4 py-2 border-b">{pg.pgId}</td>
+                    <td className="px-4 py-2 border-b">{pg.name}</td>
+                    <td className="px-4 py-2 border-b">{pg.city}</td>
+                    <td className="px-4 py-2 border-b">{pg.ownerId}</td>
+                    <td className="px-4 py-2 border-b">{pg.pgType}</td>
+                    <td className="px-4 py-2 border-b">{pg.pricePerBed?.parsedValue ?? pg.pricePerBed}</td>
+                    <td className="px-4 py-2 border-b">
+                      <div className="flex gap-4 justify-center">
+                        <button className="bg-blue-100 text-blue-700 px-3 py-1 rounded shadow hover:bg-blue-200 transition font-medium" onClick={() => handleView(pg.pgId)}>View</button>
+                        <button className="bg-green-100 text-green-700 px-3 py-1 rounded shadow hover:bg-green-200 transition font-medium" onClick={() => handleEdit(pg)}>Edit</button>
+                        <button className="bg-red-100 text-red-700 px-3 py-1 rounded shadow hover:bg-red-200 transition font-medium" onClick={() => handleDelete(pg.pgId)}>Delete</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

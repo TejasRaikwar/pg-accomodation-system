@@ -4,6 +4,8 @@ import { toast } from "react-toastify";
 
 const AdminBookings = () => {
     const [bookings, setBookings] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage] = useState(10);
     const [loading, setLoading] = useState(true);
     const [filterUserId, setFilterUserId] = useState("");
     const [filterPgId, setFilterPgId] = useState("");
@@ -32,6 +34,7 @@ const AdminBookings = () => {
 
     useEffect(() => {
         fetchBookings();
+        setCurrentPage(1);
     }, [filterUserId, filterPgId]);
 
     // Remove handleCancel and modal logic since Cancel button is removed
@@ -64,6 +67,12 @@ const AdminBookings = () => {
         }
     };
 
+    // Pagination logic
+    const indexOfLastRow = currentPage * rowsPerPage;
+    const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+    const currentRows = bookings.slice(indexOfFirstRow, indexOfLastRow);
+    const totalPages = Math.ceil(bookings.length / rowsPerPage);
+
     return (
         <div>
             <h2 className="text-2xl font-bold mb-4">All Bookings</h2>
@@ -72,6 +81,7 @@ const AdminBookings = () => {
                 <input type="number" placeholder="Filter by PG ID" value={filterPgId} onChange={e => {setFilterPgId(e.target.value); setFilterUserId("");}} className="border px-2 py-1 rounded" />
             </div>
             {loading ? <p>Loading...</p> : (
+                <>
                 <table className="min-w-full border">
                     <thead>
                         <tr>
@@ -85,7 +95,7 @@ const AdminBookings = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {bookings.map(b => (
+                        {currentRows.map(b => (
                             <tr key={b.id}>
                                 <td className="border px-2 py-1">{b.id}</td>
                                 <td className="border px-2 py-1">{b.pgId}</td>
@@ -106,7 +116,15 @@ const AdminBookings = () => {
                             </tr>
                         ))}
                     </tbody>
-                </table>)}
+                </table>
+                {/* Pagination Controls */}
+                <div className="flex justify-center items-center mt-4 gap-2">
+                    <button className="px-2 py-1 border rounded" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>Prev</button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <button className="px-2 py-1 border rounded" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>Next</button>
+                </div>
+                </>
+            )}
         {/* ...existing code... */}
     </div>
     );
